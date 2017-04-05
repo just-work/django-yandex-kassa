@@ -105,6 +105,8 @@ class CheckOrderView(BaseFormView):
             payment.shop_amount = cd['shopSumAmount']
             payment.performed_datetime = datetime.now()
             payment.invoice_id = cd['invoiceId']
+            if cd.get('orderSumAmount'):
+                payment.order_amount = cd.get('orderSumAmount')
 
             try:
                 payment.save()
