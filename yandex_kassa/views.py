@@ -57,7 +57,7 @@ class BaseFormView(FormView):
 
         msg = u'Ошибка при валидации формы проверки платежа '
         logger.info(msg, extra=dict(errors=errors))
-        logger.debug(msg + str(errors))
+        logger.warn(msg + str(errors))
 
         data = dict(code=200)  # Внутренняя ошибка магазина
 
@@ -115,7 +115,7 @@ class CheckOrderView(BaseFormView):
                 content = self.get_xml(dict(code=200))
                 return self.get_response(content)
         else:
-            logger.info(u'Платеж с номером #%s не найден' % order_num, exc_info=True)
+            logger.warn(u'Платеж с номером #%s не найден' % order_num, exc_info=True)
             content = self.get_xml(dict(code=200))
             return self.get_response(content)
 
