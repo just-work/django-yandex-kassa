@@ -81,8 +81,8 @@ class BaseFormView(FormView):
         content = self.get_xml(data)
         return self.get_response(content)
 
-    def check_md5(self, cd):
-        md5_hash = BaseMd5Form.make_md5(cd)
+    def check_md5(self, cd, payment=None):
+        md5_hash = BaseMd5Form.make_md5(cd, payment)
         return cd['md5'] == md5_hash
 
 
@@ -93,13 +93,13 @@ class CheckOrderView(BaseFormView):
         cd = form.cleaned_data
 
         order_num = cd['customerNumber']
+        payment = form.get_payment()
 
-        if not self.check_md5(cd):
+        if not self.check_md5(cd, payment):
             logger.warn(u'Ошибка при проверке MD5 платеж #%s' % order_num, exc_info=True)
             content = self.get_xml(dict(code=1))
             return self.get_response(content)
 
-        payment = form.get_payment()
         if payment:
             payment.status = Payment.STATUS.PROCESSED
             payment.shop_amount = cd['shopSumAmount']
@@ -137,14 +137,14 @@ class PaymentAvisoView(BaseFormView):
         cd = form.cleaned_data
 
         order_num = cd['customerNumber']
+        payment = form.get_payment()
 
-        if not self.check_md5(cd):
+        if not self.check_md5(cd, payment):
             msg = u'Ошибка при проверке MD5 платеж #%s' % order_num
             logger.warn(msg, exc_info=True)
             content = self.get_xml(dict(code=1, message=msg))
             return self.get_response(content)
 
-        payment = form.get_payment()
         payment.status = Payment.STATUS.SUCCESS
         if not payment.performed_datetime:
             payment.performed_datetime = datetime.now()

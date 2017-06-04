@@ -49,14 +49,15 @@ class BaseMd5Form(forms.Form):
     md5 = forms.CharField(min_length=32, max_length=32, widget=readonly_widget)
 
     @staticmethod
-    def make_md5(cd):
+    def make_md5(cd, payment=None):
         """
         action;orderSumAmount;orderSumCurrencyPaycash;orderSumBankPaycash;shopId;invoiceId;customerNumber;shopPassword
         """
         cd = {k: str(v) for k, v in cd.items()}
+        sumAmount = getattr(payment, 'order_amount', None) or cd['orderSumAmount']
 
         params = [cd['action'],
-                  str(cd['orderSumAmount']),
+                  str(sumAmount),
                   str(cd['orderSumCurrencyPaycash']),
                   str(cd['orderSumBankPaycash']),
                   str(cd['shopId']),
