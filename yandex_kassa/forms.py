@@ -54,10 +54,13 @@ class BaseMd5Form(forms.Form):
         action;orderSumAmount;orderSumCurrencyPaycash;orderSumBankPaycash;shopId;invoiceId;customerNumber;shopPassword
         """
         cd = {k: str(v) for k, v in cd.items()}
-        sumAmount = getattr(payment, 'order_amount', None) or cd['orderSumAmount']
+        sum_amount = getattr(payment, 'order_amount', None)
+        sum_amount = "{0:.2f}".format(sum_amount) if sum_amount else None
+        cd_sum_amount = cd['orderSumAmount']
+        sum_amount = sum_amount or cd_sum_amount
 
         params = [cd['action'],
-                  str(sumAmount),
+                  str(sum_amount),
                   str(cd['orderSumCurrencyPaycash']),
                   str(cd['orderSumBankPaycash']),
                   str(cd['shopId']),
